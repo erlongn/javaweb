@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="./jquery-1.11.3.js"></script>
+
+<style type="text/css">
+ul {
+	margin: 0px 0px;
+	padding: 0px 0px;
+	height: 440px;
+	width: 440px;
+	list-style: none;
+	float: left;
+}
+
+ul li {
+	height: 22px;
+	width: 440px;
+}
+
+ul li span {
+	width: 20px;
+	height: 20px;
+	display: block;
+	float: left;
+	border: 1px solid red;
+	background-color: orange;
+}
+
+.shiti {
+	background-color: black;
+}
+
+.snake {
+	background-color: blue;
+}
+
+.food{
+	background-color: #F9F9F9;
+}
+</style>
+
+</head>
+<body>
+
+
+	<div id="wrap"
+		style="width: 600px; margin: 0px auto; background-color: red; height: 440px;">
+		<ul id="hang">
+
+		</ul>
+		<div style="float: left">
+			<button onclick="start()" id="start">开始</button>
+			<button onclick="stop()" id="stop">暂停</button>
+			<button onclick="reset()" id="reset">重玩</button>
+		</div>
+		<div style="clear: bone;"></div>
+	</div>
+
+
+
+
+
+	<script type="text/javascript">
+		document.onkeydown = function(e) {
+			if (event.keyCode == 65) { //键盘方向键--左
+				swit(snake, "left");
+			}
+			if (event.keyCode == 87) {//键盘方向键--上
+				swit(snake, "up");
+			}
+			if (event.keyCode == 68) {//键盘方向键--右
+				swit(snake, "right");
+			}
+			if (event.keyCode == 83) {//键盘方向键--下
+				swit(snake, "down");
+			}
+		}
+
+		var row = 20, column = 20;
+
+		var shijian = 200;
+		
+		var food = null;
+
+		var snake = {
+			direction : "right",
+			minLen : 5,
+			maxLen : 20,
+			location : [ {
+				r : 0,
+				c : 4,
+			}, {
+				r : 0,
+				c : 3,
+			}, {
+				r : 0,
+				c : 2,
+			}, {
+				r : 0,
+				c : 1
+			}, {
+				r : 0,
+				c : 0
+			} ]
+		};
+
+		//蛇掉头的方法
+		function swit(sna, dir) {
+
+			console.dir("原来方向" + sna.direction);
+			console.dir("检测方向" + dir);
+
+			if (sna.direction == "right" || sna.direction == "left") {
+				if (dir == "up" || dir == "down") {
+					sna.direction = dir;
+
+					console.dir("定位方向" + dir);
+				}
+			}
+
+			if (sna.direction == "up" || sna.direction == "down") {
+				if (dir == "right" || dir == "left") {
+					sna.direction = dir;
+
+					console.dir("定位方向" + dir);
+				}
+			}
+
+		}
+		//蛇移动的方法
+		function move(sna) {
+			var top = sna.location[0];
+
+			switch (sna.direction) {
+			case "right":
+
+				//在数组的最前端加入元素
+				//获取右边的元素
+				var r = top.r;
+				var c = top.c;
+
+				if (c == 19) {
+					console.dir("超越边界");
+					clearInterval(con);
+					return false;
+				}
+
+				sna.location.unshift({
+					r : r,
+					c : c + 1
+				});
+
+				if (sna.location.length == 21) {
+					sna.location.pop();
+				}
+
+				console.dir(sna.location);
+				break;
+			case "left":
+				//在数组的最前端加入元素
+				//获取右边的元素
+				var r = top.r;
+				var c = top.c;
+
+				if (c == 0) {
+					console.dir("超越边界");
+					clearInterval(con);
+					return false;
+				}
+
+				sna.location.unshift({
+					r : r,
+					c : c - 1
+				});
+
+				if (sna.location.length == 21) {
+					sna.location.pop();
+				}
+
+				console.dir(sna.location);
+				break;
+			case "up":
+				//在数组的最前端加入元素
+				//获取右边的元素
+				var r = top.r;
+				var c = top.c;
+
+				if (r == 0) {
+					console.dir("超越边界");
+					clearInterval(con);
+					return false;
+				}
+
+				sna.location.unshift({
+					r : r - 1,
+					c : c
+				});
+
+				if (sna.location.length == 21) {
+					sna.location.pop();
+				}
+
+				console.dir(sna.location);
+				break;
+			case "down":
+				//在数组的最前端加入元素
+				//获取右边的元素
+				var r = top.r;
+				var c = top.c;
+
+				if (r == 19) {
+					console.dir("超越边界");
+					clearInterval(con);
+					return false;
+				}
+
+				sna.location.unshift({
+					r : r + 1,
+					c : c
+				});
+
+				if (sna.location.length == 21) {
+					sna.location.pop();
+				}
+
+				console.dir(sna.location);
+				break;
+
+			default:
+				break;
+			}
+
+			//跟新位置
+
+			//蛇的长度
+			//maxLen : 20,
+			//minLen : 3,
+
+			var len = snake.minLen;
+			if (dead(snake)) {
+				clearInterval(con);
+				return false;
+			}
+			
+			//将数组中的第一个元素，修改
+			var ro = snake.location[0].r;
+			var co = snake.location[0].c;
+
+			$("#" + ro + "-" + co).toggleClass("snake");
+
+			ro = snake.location[len].r;
+			co = snake.location[len].c;
+
+			$("#" + ro + "-" + co).toggleClass("snake");
+			
+			
+			//吃长度修改加一
+			if (eat(snake)) {
+				clearInterval(con);
+				return false;
+			}
+		}
+		
+		
+		
+		
+		
+
+		//蛇的碰撞检测方法
+		function dead(sna) {
+			//获取第一个元素
+			var ro = sna.location[0].r;
+			var co = sna.location[0].c;
+
+			//是否吃到石头
+			for (var i = 0; i < shiti.length; i++) {
+				if (ro == shiti[i].r && co == shiti[i].c) {
+					console.dir("碰到石头！");
+					return true;
+				}
+			}
+
+			for(var i = 3; i < sna.minLen; i++){
+				
+				if(ro == sna.location[i].r &&  co == sna.location[i].c){
+					console.dir("碰到自己了！");
+					return true;					
+				}
+				
+			}
+			return false;
+
+		}
+
+		//蛇的吃方法
+		function eat(sna) {
+			if(food != null){
+				var ro = snake.location[0].r;
+				var co = snake.location[0].c;
+				if(ro == food.r && co == food.c){
+					
+					sna.minLen = sna.minLen + 1;
+					ro = snake.location[sna.minLen -1].r;
+					co = snake.location[sna.minLen -1].c;
+					$("#" + ro + "-" + co).toggleClass("snake");
+					
+					$("#" + food.r + "-" + food.c).toggleClass("food");
+					food = null;
+					
+					create(shijian);
+					
+					if(sna.minLen == sna.maxLen){
+						console.dir("过关了！");
+						return true;
+					}else{
+						return false;
+					}
+				}
+			}
+		}
+
+		var con;
+		
+		
+		//生成食物
+		
+		function create(haomiao){
+			setTimeout(function(){
+				
+				if(food == null){
+					//生成随机数
+					var keyi = [];
+					
+					var spans = $("span");
+					
+					for(var i = 0; i < spans.length; i++){
+						var sp = $(spans[i]);
+						if(!(sp.hasClass("snake") || sp.hasClass("shiti"))){
+							keyi.push(spans[i]);
+						}
+					}
+					
+					var ke = keyi.length;
+					
+					var shuji = Math.ceil(Math.random()*ke) - 1;
+					var zb = $(keyi[shuji]).attr("id").split("-");
+					
+					$(keyi[shuji]).toggleClass("food");
+					food = {r: zb[0] * 1,c:zb[1] * 1}
+				
+				}
+				
+			},haomiao);
+		}
+
+		//定时器
+		function time(haomiao) {
+			con = setInterval(function() {
+				move(snake);
+			}, haomiao);
+		}
+
+		//控制器 
+		function start() {
+			$("#start").attr("disabled", "disabled");
+			$("#stop").removeAttr("disabled");
+			time(shijian);
+		}
+
+		function stop() {
+			$("#stop").attr("disabled", "disabled");
+			$("#start").removeAttr("disabled");
+			clearInterval(con);
+		}
+
+		function reset() {
+			if (confirm("确定重新开始吗")) {
+				clearInterval(con);
+				
+				food = null;
+				create(shijian);
+				$("#start").removeAttr("disabled");
+				$("#stop").removeAttr("disabled");
+
+				//实体不变，蛇回复原来的配置
+				snake = {
+					direction : "right",
+					minLen : 5,
+					maxLen : 20,
+					location : [ {
+						r : 0,
+						c : 4,
+					}, {
+						r : 0,
+						c : 3,
+					}, {
+						r : 0,
+						c : 2,
+					}, {
+						r : 0,
+						c : 1
+					}, {
+						r : 0,
+						c : 0
+					} ]
+				};
+
+				//画布设置原来的样式
+				hang.empty();
+				//重新赋值
+				draw();
+				start(); 
+				
+			} else {
+				//
+			}
+		}
+
+		var shiti = [ {
+			r : 5,
+			c : 6
+		}, {
+			r : 5,
+			c : 7
+		}, {
+			r : 5,
+			c : 8
+		}, {
+			r : 5,
+			c : 9
+		}, {
+			r : 5,
+			c : 10
+		}, {
+			r : 5,
+			c : 15
+		}, {
+			r : 6,
+			c : 15
+		}, {
+			r : 7,
+			c : 15
+		}, {
+			r : 8,
+			c : 15
+		}, {
+			r : 9,
+			c : 15
+		}, {
+			r : 19,
+			c : 19
+		}, {
+			r : 3,
+			c : 3
+		}, {
+			r : 13,
+			c : 13
+		}, {
+			r : 9,
+			c : 9
+		}, {
+			r : 19,
+			c : 0
+		} ];
+
+		var hang;
+		$(document).ready(function() {
+			hang = $("#hang");
+			draw();
+			create(shijian);
+		});
+
+		function draw() {
+			for (var i = 0; i < row; i++) {
+				var li = $("<li id = '"+i+"'></li>");
+				hang.append(li);
+				for (var j = 0; j < column; j++) {
+					var contain = false;
+					for (var h = 0; h < shiti.length; h++) {
+						if (shiti[h].r == i && shiti[h].c == j) {
+							contain = true;
+						}
+					}
+					if (contain) {
+						li
+								.append("<span id = '" + i + "-" + j + "'class = 'shiti'></span>");
+					} else {
+						contain = false;
+
+						for (var h = 0; h < snake.location.length; h++) {
+							if (snake.location[h].r == i
+									&& snake.location[h].c == j) {
+								contain = true;
+							}
+						}
+
+						if (contain) {
+							li
+									.append("<span id = '" + i + "-" + j + "'class = 'snake'></span>");
+						} else {
+							li
+									.append("<span id = '" + i + "-" + j + "'class = ''></span>");
+						}
+					}
+
+				}
+			}
+		}
+	</script>
+
+</body>
+</html>
