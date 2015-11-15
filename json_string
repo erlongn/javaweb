@@ -1,0 +1,51 @@
+var toStr = function(obj) {
+    function isArrayFn(o) {
+        return Object.prototype.toString.call(o) === '[object Array]';
+    }
+    var string = function aa(asdf) {
+        var st = "";
+        if (isArrayFn(asdf)) {
+            st += '[';
+            for (xy in asdf) {
+                if (asdf.hasOwnProperty(xy)) {
+                    st += aa(asdf[xy]) + ",";
+                }
+            }
+            if (st.endsWith(",")) {
+                st = st.substring(0, st.length - 1);
+            }
+            st += ']';
+        } else if (typeof asdf == 'object') {
+            if (asdf === null ) {
+                return null ;
+            }
+            st += '{';
+            for (xy in asdf) {
+                if (asdf.hasOwnProperty(xy)) {
+                    st += '"' + xy + '"' + ":" + aa(asdf[xy]) + ",";
+                }
+            }
+            if (st.endsWith(",")) {
+                st = st.substring(0, st.length - 1);
+            }
+            st += '}';
+        } else if (typeof asdf == 'function') {
+            throw {
+                name: "error",
+                message: "It is a function!"
+            }
+        } else if (typeof asdf == 'undefined') {
+            throw {
+                name: "error",
+                message: "It is a undefined!"
+            }
+        } else {
+            return typeof asdf == "string" ? '"' + asdf + '"' : asdf;
+        }
+        return st;
+    }
+    (obj);
+    
+    return string;
+}
+
