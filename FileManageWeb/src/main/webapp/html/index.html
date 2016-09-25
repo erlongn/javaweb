@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<script type="text/javascript" src="http://localhost:8080/file-manage-web/js/jquery-1.12.4.min.js"></script>
+	<script type="text/javascript" src="http://localhost:8080/file-manage-web/js/json2.js"></script>
+
+	<h1>乱码测试 表单 get</h1>
+	<a
+		href="http://localhost:8080/file-manage-web/test/five?content=大龙龙&name=大龙&age=20">
+		get连接测试</a>
+		
+	<form
+		action="http://localhost:8080/file-manage-web/test/five?content=大龙龙"
+		method="get">
+		<input type="text" name="name" /> <input type="text" name="age" /> <input
+			type="submit" value="提交" />
+	</form>
+
+	<h1>乱码测试  表单 post</h1>
+	<form
+		action="http://localhost:8080/file-manage-web/test/five?content=大龙龙"
+		method="post">
+		<input type="text" name="name" /> <input type="text" name="age" /> <input
+			type="submit" value="提交" />
+	</form>
+
+	<!--表单 post  file -->
+
+	<h1>文件上传测试</h1>
+	<form
+		action="http://localhost:8080/file-manage-web/test/upload?content=大龙龙"
+		method="post" enctype="multipart/form-data">
+		<input type="file" name = "file" multiple="multiple">
+		<input type="file" name = "file1" multiple="multiple">
+		<input type="checkbox" name = "aihaoes" value="ai1"> ai1
+		<input type="checkbox" name = "aihaoes" value="ai2"> ai2
+		<input type="text" name="name" /> <input type="text" name="age" /> <input
+			type="submit" value="提交" />
+	</form>	
+
+	<form
+		action="http://localhost:8080/file-manage-web/test/upload2?content=大龙龙"
+		method="post" enctype="multipart/form-data">
+		<input type="file" name = "file" multiple="multiple">
+		<input type="file" name = "file1" multiple="multiple">
+		<input type="checkbox" name = "aihaoes" value="ai1"> ai1
+		<input type="checkbox" name = "aihaoes" value="ai2"> ai2
+		
+		<input type="text" name="name" /> <input type="text" name="age" /> <input
+			type="submit" value="提交" />
+	</form>	
+	
+
+	<a href="javascript:void(0)" id = "get"> get</a>
+	<a href="javascript:void(0)" id = "getCrossDomain"> getCrossDomain</a>
+	<a href="javascript:void(0)" id = "post"> post</a>
+	<a href="javascript:void(0)" id = "postJson"> postJson</a>
+
+
+	<h1>文件下载测试</h1>
+	<a href="http://localhost:8080/file-manage-web/test/four"> get下载测试</a>
+
+
+<script type="text/javascript">
+$(function (){
+	$("#get").click(function(){
+
+		$.ajax({url:"http://localhost:8080/file-manage-web/test/getAndPost?me=二龙&shuzu=u大龙",
+				type:"get",
+				async:false,
+				cache:false,
+				data:{name:"大龙",age:10,shuzu:"d大龙"},
+				success:function(){
+					console.dir(arguments);
+				},
+				error:function(){
+					console.dir(arguments);
+				}});
+		//获取重定向后的数据
+		$.ajax({url:"http://localhost:8080/file-manage-web/test/getAndPostRedirect?me=二龙&shuzu=u大龙",
+				type:"get",
+				async:false,
+				cache:false,
+				data:{name:"大龙",age:10,shuzu:"d大龙"},
+				success:function(){
+					console.dir(arguments);
+				},
+				error:function(){
+					console.dir(arguments);
+				}});
+		
+	});
+	
+	
+	$("#getCrossDomain").click(function(){
+		$.ajax({url:"http://localhost:8080/file-manage-web/test/getCrossDomain?me=二龙&shuzu=u大龙",
+			type:"get",
+			async:false,
+			cache:false,
+			//必须执行类型 执行方法用
+			dataType: 'jsonp',
+			//指定请求的回调方法
+			jsonp:"dalongCallBack",
+			data:{name:"大龙",age:10,shuzu:"d大龙"},
+			success:function(){
+				console.dir(arguments);
+			},
+			error:function(){
+				console.dir(arguments);
+			}});
+		
+		
+		$.ajax({url:"http://localhost:8080/file-manage-web/test/getCrossDomain?me=二龙&shuzu=u大龙",
+			type:"post",
+			async:false,
+			cache:false,
+			//必须执行类型 执行方法用
+			dataType: 'jsonp',
+			//指定请求的回调方法
+			jsonp:"dalongCallBack",
+			data:{name:"大龙",age:10,shuzu:"d大龙"},
+			success:function(){
+				console.dir(arguments);
+			},
+			error:function(){
+				console.dir(arguments);
+			}});		
+		
+	});
+	
+	
+	$("#post").click(function(){
+		$.ajax({url:"http://localhost:8080/file-manage-web/test/getAndPost?me=二龙&shuzu=u大龙",
+			type:"post",
+			async:false,
+			cache:false,
+			data:{name:"大龙",age:10,shuzu:"d大龙"},
+			success:function(){
+				console.dir(arguments);
+			},
+			error:function(){
+				console.dir(arguments);
+			}});
+		//获取重定向后的数据
+		$.ajax({url:"http://localhost:8080/file-manage-web/test/getAndPostRedirect?me=二龙&shuzu=u大龙",
+			type:"post",
+			async:false,
+			cache:false,
+			data:{name:"大龙",age:10,shuzu:"d大龙"},
+			success:function(){
+				console.dir(arguments);
+			},
+			error:function(){
+				console.dir(arguments);
+			}});
+		
+	});
+	
+	
+	
+	
+	
+	$("#postJson").click(function(){
+		$.ajax({url:"http://localhost:8080/file-manage-web/test/postJson?me=二龙&me=大龙",
+			type:"post",
+			async:false,
+			cache:false,
+			//必须指定类型
+			contentType: "application/json; charset=utf-8",
+			//必须是字符串类型的有效json
+			data:JSON.stringify({me:["大龙","erlong","二龙","dalong"],age:10,name:"大龙111"}),
+			success:function(){
+				console.dir(arguments);
+			},
+			error:function(){
+				console.dir(arguments);
+			}});
+	});
+});
+</script>
+</body>
+</html>

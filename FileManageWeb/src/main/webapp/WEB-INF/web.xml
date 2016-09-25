@@ -1,0 +1,92 @@
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+
+	<session-config>   
+		<session-timeout>30</session-timeout>   
+	</session-config> 
+	
+	<!-- Spring配置 -->
+	<!-- ====================================== -->
+	<listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+	
+	
+	<!-- 指定Spring Bean的配置文件所在目录。默认配置在WEB-INF目录下 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:/applicationContext.xml</param-value>
+		<!-- <param-value>/applicationContext.xml</param-value> -->
+	</context-param>	
+
+
+	<!-- Spring MVC配置 -->
+	<!-- ====================================== -->
+	<servlet>
+		<servlet-name>spring</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<!-- 可以自定义servlet.xml配置文件的位置和名称，默认为WEB-INF目录下，名称为[<servlet-name>]-servlet.xml，如spring-servlet.xml -->
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:/spring-servlet.xml</param-value>
+			<!-- <param-value>/spring-servlet.xml</param-value> -->
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	
+	
+	<!--在 server.xml 中Connector 设置 
+	useBodyEncodingForURI="true" get post处理方式一样   
+	URIEncoding="UTF-8" url请求编码为UTF-8  解决url参数请求乱码  如get的ajax请求    post的url里面的参数  -->
+	<!-- POST中文乱码过滤器 -->  
+    <filter>  
+        <filter-name>CharacterEncodingFilter</filter-name>  
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>  
+        <init-param>  
+            <param-name>encoding</param-name>  
+            <param-value>utf-8</param-value>  
+        </init-param>  
+    </filter>  
+      
+    <filter-mapping>  
+        <filter-name>CharacterEncodingFilter</filter-name>  
+        <url-pattern>/*</url-pattern>  
+    </filter-mapping> 	
+	
+
+
+	<!-- GZIPFilter Definition -->
+    <filter>
+         <filter-name>GZIPFilter</filter-name>
+         <filter-class>
+             com.tacitknowledge.filters.gzipfilter.GZIPFilter
+        </filter-class>
+    </filter>
+    <filter-mapping>
+         <filter-name>GZIPFilter</filter-name>
+        <url-pattern>*.js</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>GZIPFilter</filter-name>
+        <url-pattern>*.css</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>GZIPFilter</filter-name>
+        <url-pattern>*.html</url-pattern>
+    </filter-mapping> 
+
+
+ 	<welcome-file-list>
+        <welcome-file>/html/index.html</welcome-file>
+    </welcome-file-list>
+
+</web-app>

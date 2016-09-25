@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd   
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd   
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd   
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd">
+
+	<context:component-scan base-package="cn.dalongn.web">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+
+	<!-- 0 设置不缓存 -->
+	<mvc:resources mapping="/img/**" location="/img/"
+		cache-period="315360000" />
+	<mvc:resources mapping="/html/**" location="/html/"
+		cache-period="315360000" />
+	<mvc:resources mapping="/css/**" location="/css/"
+		cache-period="315360000" />
+	<mvc:resources mapping="/js/**" location="/js/"
+		cache-period="0" />
+
+
+
+	<bean id="crossDomainViewResolver" class="cn.dalongn.web.view.CrossDomainViewResolver">
+		<property name="crossDomainView">
+			<bean class="cn.dalongn.web.view.CrossDomainView" />
+		</property>
+	</bean>
+
+
+	<bean id="stringJsonViewResolver" class="cn.dalongn.web.view.StringJsonViewResolver">
+		<property name="stringJsonView">
+			<bean class="cn.dalongn.web.view.StringJsonView" />
+		</property>
+	</bean>
+	
+	<bean id="downloadFileViewResolver" class="cn.dalongn.web.view.DownloadFileViewResolver">
+		<property name="downloadFileView">
+			<bean class="cn.dalongn.web.view.DownloadFileView" />
+		</property>
+	</bean>	
+
+
+	<!-- 配置Velocity引擎 -->
+	<bean id="velocityViewResolver"
+		class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="suffix" value=".htm" />
+		<property name="contentType">
+			<value>text/html;charset=UTF-8</value>
+		</property>
+		<!-- <property name="exposeSessionAttributes"> <value>true</value> </property> 
+			<property name="exposeRequestAttributes"> <value>true</value> </property> -->
+		<!-- <property name="order" value="2" /> -->
+	</bean>
+	<bean id="velocityConfigurer"
+		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="resourceLoaderPath" value="/WEB-INF/vel/" />
+		<property name="velocityProperties">
+			<props>
+				<prop key="input.encoding">UTF-8</prop>
+				<prop key="output.encoding">UTF-8</prop>
+				<prop key="userdirective">
+					cn.dalongn.web.directive.GetDateDirective,
+					cn.dalongn.web.directive.TestDirective
+				</prop>
+				<prop key="directive.set.null.allowed">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!--jsp 配置 -->
+	<!--order 值越小 优先级越高 视图解析 -->
+	<bean id="internalResourceViewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<!-- <property name="order" value="3" /> -->
+	</bean>
+
+
+
+	<!-- commons-fileupload.jar commons-io.jar -->
+	<!-- SpringMVC上传文件时，需要配置MultipartResolver处理器 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8" />
+		<!-- 指定所上传文件的总大小不能超过200KB。注意maxUploadSize属性的限制不是针对单个文件，而是所有文件的容量之和 -->
+		<property name="maxUploadSize" value="2000000" />
+		<!-- 最大内存大小 (10240) -->
+		<property name="maxInMemorySize" value="40960" />
+	</bean>
+
+	<!-- SpringMVC在超出上传文件限制时，会抛出org.springframework.web.multipart.MaxUploadSizeExceededException -->
+	<!-- 该异常是SpringMVC在检查上传的文件信息时抛出来的，而且此时还没有进入到Controller方法中 -->
+	<bean id="exceptionResolver"
+		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<!-- 遇到MaxUploadSizeExceededException异常时，自动跳转到/WEB-INF/jsp/error_fileupload.jsp页面 -->
+				<prop
+					key="org.springframework.web.multipart.MaxUploadSizeExceededException">index</prop>
+			</props>
+		</property>
+	</bean>
+
+	<mvc:annotation-driven></mvc:annotation-driven>
+</beans>
