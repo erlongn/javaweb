@@ -5,7 +5,7 @@ import java.util.Locale;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 
-import cn.dalongn.web.constants.WebDefalut;
+import cn.dalongn.web.constants.WebViewDefalut;
 
 public class DownloadFileViewResolver extends AbstractCachingViewResolver {
 
@@ -15,7 +15,7 @@ public class DownloadFileViewResolver extends AbstractCachingViewResolver {
 	protected View loadView(String viewName, Locale locale) throws Exception {
 
 		DownloadFileView view = null;
-		if (WebDefalut.DOWNLOAD_FILE.equals(viewName)) {
+		if (WebViewDefalut.DOWNLOAD_FILE.equals(viewName)) {
 			view = downloadFileView;
 		}
 		return view;

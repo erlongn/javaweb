@@ -14,7 +14,6 @@
 			expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 
-
 	<!-- 0 设置不缓存 -->
 	<mvc:resources mapping="/img/**" location="/img/"
 		cache-period="315360000" />
@@ -24,6 +23,26 @@
 		cache-period="315360000" />
 	<mvc:resources mapping="/js/**" location="/js/"
 		cache-period="0" />
+
+
+<!--<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="" />
+			<mvc:mapping path="" />
+			<mvc:exclude-mapping path="" />
+			<mvc:exclude-mapping path="" />
+			<bean class="">
+				<property name="" ></property>
+				<property name="" ></property>
+			</bean>
+		</mvc:interceptor>
+		
+		<bean class="">
+			<property name="" ></property>
+			<property name="" ></property>
+		</bean>
+	</mvc:interceptors> -->
+
 
 
 
@@ -39,12 +58,12 @@
 			<bean class="cn.dalongn.web.view.StringJsonView" />
 		</property>
 	</bean>
-	
+
 	<bean id="downloadFileViewResolver" class="cn.dalongn.web.view.DownloadFileViewResolver">
 		<property name="downloadFileView">
 			<bean class="cn.dalongn.web.view.DownloadFileView" />
 		</property>
-	</bean>	
+	</bean>
 
 
 	<!-- 配置Velocity引擎 -->
@@ -110,6 +129,8 @@
 			</props>
 		</property>
 	</bean>
+
+	<import resource="jcaptcha.xml"/>
 
 	<mvc:annotation-driven></mvc:annotation-driven>
 </beans>

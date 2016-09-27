@@ -1,16 +1,21 @@
 package cn.dalongn.web.test;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,13 +28,18 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import cn.dalongn.web.constants.WebDefalut;
+import com.octo.captcha.service.multitype.GenericManageableCaptchaService;
+
+import cn.dalongn.web.constants.WebViewDefalut;
 import cn.dalongn.web.uitls.FileUtiles;
 
 @Controller
 @RequestMapping("/test") // 指定唯一一个*.do请求关联到该Controller
 public class TestController {
-	
+
+	@Autowired
+	private GenericManageableCaptchaService captchaService;
+
 	@RequestMapping(value = "one", method = { RequestMethod.POST, RequestMethod.GET })
 	public String one(HttpServletRequest request, HttpServletResponse response) {
 
@@ -74,7 +84,7 @@ public class TestController {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("name", "大龙");
 		modelMap.put("key", map);
-		return WebDefalut.STRING_JSON;
+		return WebViewDefalut.STRING_JSON;
 	}
 
 	@RequestMapping(value = "three", method = { RequestMethod.POST, RequestMethod.GET })
@@ -89,7 +99,37 @@ public class TestController {
 	public String four(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws IOException {
 		modelMap.put("file", FileUtiles.toByteArray("C:\\Users\\DaLon\\Desktop\\大龙.txt"));
 		modelMap.put("name", "大龙.txt");
-		return WebDefalut.DOWNLOAD_FILE;
+		return WebViewDefalut.DOWNLOAD_FILE;
+	}
+
+	@RequestMapping(value = "jcaptcha", method = { RequestMethod.POST, RequestMethod.GET })
+	public void jcaptcha(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap)
+			throws IOException {
+
+		try {
+			ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
+			String captchaId = request.getSession().getId();
+
+			BufferedImage challenge = captchaService.getImageChallengeForID(captchaId, request.getLocale());
+			// Boolean isResponseCorrect =
+			// captchaService.validateResponseForID(request.getSession().getId(),
+			// "");
+
+			response.setHeader("Cache-Control", "no-store");
+			response.setHeader("Pragma", "no-cache");
+			response.setDateHeader("Expires", 0L);
+			response.setContentType("image/jpeg");
+
+			ImageIO.write(challenge, "jpeg", jpegOutputStream);
+			byte[] captchaChallengeAsJpeg = jpegOutputStream.toByteArray();
+
+			ServletOutputStream respOs = response.getOutputStream();
+			respOs.write(captchaChallengeAsJpeg);
+			respOs.flush();
+			respOs.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@RequestMapping(value = "five", method = { RequestMethod.POST, RequestMethod.GET })
@@ -99,7 +139,7 @@ public class TestController {
 		modelMap.put("age", age);
 		modelMap.put("content", content);
 
-		return WebDefalut.STRING_JSON;
+		return WebViewDefalut.STRING_JSON;
 	}
 
 	@RequestMapping(value = "/upload", method = { RequestMethod.POST })
@@ -157,7 +197,7 @@ public class TestController {
 		modelMap.put("content", content);
 		modelMap.put("aihaoes", aihaoes);
 
-		return WebDefalut.STRING_JSON;
+		return WebViewDefalut.STRING_JSON;
 	}
 
 	@RequestMapping(value = "/upload2", method = { RequestMethod.POST })
@@ -209,7 +249,7 @@ public class TestController {
 		modelMap.put("content", content);
 		modelMap.put("aihaoes", aihaoes);
 
-		return WebDefalut.STRING_JSON;
+		return WebViewDefalut.STRING_JSON;
 	}
 
 	@RequestMapping(value = "getAndPost", method = { RequestMethod.POST, RequestMethod.GET })
@@ -245,7 +285,7 @@ public class TestController {
 		modelMap.put("method", dalongCallBack);
 		modelMap.put("args", map);
 
-		return WebDefalut.CROSS_DOMAIN;
+		return WebViewDefalut.CROSS_DOMAIN;
 	}
 
 	@RequestMapping(value = "postJson", method = { RequestMethod.POST })
